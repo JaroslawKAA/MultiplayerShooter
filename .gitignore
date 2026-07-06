@@ -73,3 +73,9 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+/.idea/.idea.MultiplayerShooter/.idea/.gitignore
+/.idea/.idea.MultiplayerShooter/.idea/indexLayout.xml
+/.idea/.idea.MultiplayerShooter/.idea/vcs.xml
+/Automation_MultiplayerShooter.slnx
+/MultiplayerShooter.sln.DotSettings.user
+/MultiplayerShooter.slnx
