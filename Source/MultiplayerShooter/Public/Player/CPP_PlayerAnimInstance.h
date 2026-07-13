@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "CPP_PlayerAnimInstance.generated.h"
 
 /**
@@ -35,6 +36,7 @@ protected:
 	float Pitch;
 
 private:
+
 	UPROPERTY()
 	TObjectPtr<class ACPP_PlayerCharacter> OwningCharacter;
 

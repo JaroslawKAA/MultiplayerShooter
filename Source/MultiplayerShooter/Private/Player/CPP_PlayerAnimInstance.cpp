@@ -5,7 +5,6 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include <KismetAnimationLibrary.h>
-
 #include "Player/CPP_PlayerCharacter.h"
 
 void UCPP_PlayerAnimInstance::NativeInitializeAnimation()
@@ -34,6 +33,12 @@ void UCPP_PlayerAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	FRotator ZRotation = FRotator(0, AnimRotation.Yaw, 0);
 
 	Direction = UKismetAnimationLibrary::CalculateDirection(OwningCharacter->GetVelocity(), ZRotation);
+	if (AnimRotation.Pitch > 90)
+	{
+		Pitch = AnimRotation.Pitch - 360;
+	}
+	else
+		Pitch = AnimRotation.Pitch;
 	bIsInAir = MovementComponent->IsFalling();
 	bIsAds = OwningCharacter->bIsAds;
 }

@@ -2,9 +2,12 @@
 
 
 #include "Player/CPP_PlayerCharacter.h"
+#include "Weapon/CPP_Weapon.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Engine/Engine.h"
 #include "Engine/LocalPlayer.h"
+#include "GameFramework/Controller.h"
 #include "Math/RotationMatrix.h"
 #include "Math/Rotator.h"
 #include "Math/Vector.h"
@@ -36,7 +39,22 @@ void ACPP_PlayerCharacter::BeginPlay()
 			}
 		}
 	}
+
+	if (!CurrentWeapon)
+	{
+		TArray<AActor*> AttachedActors;
+		GetAttachedActors(AttachedActors);
+		for (AActor* AttachedActor : AttachedActors)
+		{
+			if (AttachedActor != nullptr
+				&& (AttachedActor->IsA(ACPP_Weapon::StaticClass())))
+			{
+				CurrentWeapon = Cast<ACPP_Weapon>(AttachedActor);
+			}
+		}
+	}
 }
+
 
 // Called every frame
 void ACPP_PlayerCharacter::Tick(float DeltaTime)
@@ -66,6 +84,11 @@ void ACPP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 			EnhancedInput->BindAction(IsADSAction, ETriggerEvent::Started, this, &ACPP_PlayerCharacter::IsAdsStarted);
 			EnhancedInput->BindAction(IsADSAction, ETriggerEvent::Completed, this,
 			                          &ACPP_PlayerCharacter::IsAdsCompleted);
+		}
+
+		if (ShootAction)
+		{
+			EnhancedInput->BindAction(ShootAction, ETriggerEvent::Started, this, &ACPP_PlayerCharacter::Shoot);
 		}
 	}
 }
@@ -133,8 +156,15 @@ void ACPP_PlayerCharacter::IsAdsCompleted(const FInputActionValue& Value)
 	}
 }
 
+void ACPP_PlayerCharacter::Shoot(const FInputActionValue& Value)
+{
+	if (bIsAds && CurrentWeapon)
+	{
+		CurrentWeapon->Shoot();
+	}
+}
+
 void ACPP_PlayerCharacter::Srv_SetsAds_Implementation(bool bNewIsAds)
 {
 	bIsAds = bNewIsAds;
 }
-

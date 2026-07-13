@@ -7,9 +7,9 @@
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
 #include "GameFramework/Character.h"
-#include "Math/Vector.h"
-#include "Math/Vector2D.h"
 #include "CPP_PlayerCharacter.generated.h"
+
+class ACPP_Weapon;
 
 UCLASS()
 class MULTIPLAYERSHOOTER_API ACPP_PlayerCharacter : public ACharacter
@@ -21,6 +21,9 @@ public:
 	ACPP_PlayerCharacter();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player State")
+	TObjectPtr<ACPP_Weapon> CurrentWeapon;
+	
 	// Movement config
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess=true))
 	double MovementSpeed = 100;
@@ -41,6 +44,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IsADSAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> ShootAction;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -62,6 +68,8 @@ private:
 	void Look(const FInputActionValue& Value);
 	void IsAdsStarted(const FInputActionValue& Value);
 	void IsAdsCompleted(const FInputActionValue& Value);
+	void Shoot(const FInputActionValue& Value);
+	
 	UFUNCTION(Server, Reliable)
 	void Srv_SetsAds(bool bNewIsAds);
 };
