@@ -7,7 +7,10 @@
 #include "CPP_PlayerController.generated.h"
 
 /**
- * 
+ * ACPP_PlayerController is a custom PlayerController class that extends
+ * the base Unreal Engine APlayerController. This class is implemented
+ * for managing player-specific controls and interactions in the
+ * MULTIPLAYERSHOOTER game.
  */
 UCLASS()
 class MULTIPLAYERSHOOTER_API ACPP_PlayerController : public APlayerController

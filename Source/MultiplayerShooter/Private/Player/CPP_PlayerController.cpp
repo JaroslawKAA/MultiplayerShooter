@@ -6,5 +6,13 @@
 void ACPP_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (IsLocalController())
+	{
+		FInputModeUIOnly InputMode;
+		InputMode.SetWidgetToFocus(nullptr);
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		SetInputMode(InputMode);
+		bShowMouseCursor = false;
+		SetInputMode(InputMode);
+	}
 }

@@ -40,6 +40,7 @@ void ACPP_PlayerCharacter::BeginPlay()
 		}
 	}
 
+	// Find weapon in child objects
 	if (!CurrentWeapon)
 	{
 		TArray<AActor*> AttachedActors;

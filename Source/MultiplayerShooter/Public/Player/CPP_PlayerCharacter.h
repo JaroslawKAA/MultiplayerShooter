@@ -20,17 +20,22 @@ public:
 	// Sets default values for this character's properties
 	ACPP_PlayerCharacter();
 
+	// -- PROPERTIES
+public:
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess=true))
+	bool bIsAds = false;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player State")
 	TObjectPtr<ACPP_Weapon> CurrentWeapon;
-	
+
 	// Movement config
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess=true))
 	double MovementSpeed = 100;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess=true))
 	double CameraLookSpeed = 1;
-		
+
 	// Mapping Context - set in blueprint (EditDefaultsOnly)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> MappingContext;
@@ -47,13 +52,14 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> ShootAction;
-	
+
+
+	// --- METHODS
+protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess=true))
-	bool bIsAds = false;
+public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -69,7 +75,7 @@ private:
 	void IsAdsStarted(const FInputActionValue& Value);
 	void IsAdsCompleted(const FInputActionValue& Value);
 	void Shoot(const FInputActionValue& Value);
-	
+
 	UFUNCTION(Server, Reliable)
 	void Srv_SetsAds(bool bNewIsAds);
 };
