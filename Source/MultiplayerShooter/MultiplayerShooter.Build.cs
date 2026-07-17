@@ -9,7 +9,9 @@ public class MultiplayerShooter : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine",
-			                                     "InputCore", "EnhancedInput", "Niagara", "UMG" });
+			                                     "InputCore", "EnhancedInput", "Niagara", "UMG", "OnlineSubsystem",
+			                                     "OnlineSubsystemUtils"
+		                                     });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "AnimGraphRuntime" });
 

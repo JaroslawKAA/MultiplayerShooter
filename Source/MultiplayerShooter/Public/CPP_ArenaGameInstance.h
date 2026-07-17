@@ -4,10 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "FindSessionsCallbackProxy.h"
+#include "Templates/SharedPointer.h"
 #include "SaveData/CPP_SG_PlayerProfile.h"
 #include "SaveData/CPP_S_PlayerProfile.h"
+#include "Session/FCPP_S_SessionResultWrapper.h"
+#include "UI/CPP_MainMenuUserWidget.h"
 #include "CPP_ArenaGameInstance.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSessionsFound, const TArray<FCPP_S_SessionResultWrapper>&, Sessions,
+												bool, bWasSuccess);
 
 /**
  * @class UCPP_ArenaGameInstance
@@ -18,14 +27,20 @@ class MULTIPLAYERSHOOTER_API UCPP_ArenaGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
-
-	// --- PROPERTIES
+	// --- CONSTANT ---
+	const FName SERVER_NAME = "SERVER_NAME";
+	
+	// --- PROPERTIES ---
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UUserWidget> MainMenuWidgetClass;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UUserWidget* MainMenuWidgetInstance;
+	UCPP_MainMenuUserWidget* MainMenuWidgetInstance;
+
+	// MainMenuWidgetInstance Getter
+	UFUNCTION(BlueprintCallable)
+	UCPP_MainMenuUserWidget* GetMainMenuWidget();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SaveData")
 	FString SlotName;
@@ -36,18 +51,43 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "SaveData")
 	FCPP_S_PlayerProfile PlayerProfile;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Debug")
+	bool bIsLanConnection = true;
 
-	// --- FUNCTIONS
+private:
+	UPROPERTY()
+	TArray<FCPP_S_SessionResultWrapper> SessionResults;
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+	FDelegateHandle OnJoinSessionDelegateHandle;
+	FDelegateHandle OnFindSessionDelegateHandle;
+
+	// --- DElEGATES ---
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UPROPERTY(BlueprintAssignable, Category = "Session")
+	FOnSessionsFound OnSessionsFound;
+	
+	// --- EVENTS ---
+public:
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void OnJoinSessionClicked(int32 SessionIndex);
+	virtual void OnJoinSessionClicked_Implementation(int32 SessionIndex);
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void UI_ShowMainMenu();
-
+	virtual void UI_ShowMainMenu_Implementation();
+	
+	// --- FUNCTIONS ---
+public:
 	UFUNCTION(BlueprintCallable)
-	void UI_HostGame();
+	void CreateMPSession(FName SessionName);
 
+	void OnJoinSessionCompleated(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	
+	void JoinMPSession(int32 SessionIndex);
+	
 	UFUNCTION(BlueprintCallable)
 	void UI_SearchGame();
-
+	
 	UFUNCTION(BlueprintCallable)
 	void ChangePlayerName(FText PlayerName);
 
@@ -57,7 +97,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SaveProfile();
 
+	UFUNCTION(BlueprintCallable)
+	bool ChangeConnectionType();
+
+	UFUNCTION(BlueprintCallable)
+	FText GetConnectionTypeText();
+
 private:
-	UFUNCTION()
 	void LoadProfile();
+
+	void OnFindSessionComplete(bool bArg);
 };
