@@ -10,7 +10,7 @@
 #include "VerseVM/VVMSession.h"
 
 
-void UCPP_ArenaGameInstance::UI_ShowMainMenu_Implementation()
+void UCPP_ArenaGameInstance::UI_ShowMainMenu()
 {
 	APlayerController* LocalPlayerController = GetFirstLocalPlayerController(GetWorld());
 	if (!MainMenuWidgetInstance)
@@ -28,8 +28,8 @@ void UCPP_ArenaGameInstance::UI_ShowMainMenu_Implementation()
 	UE_LOG(LogTemp, Log, TEXT("Showing Main Menu"));
 
 	CheckForSavedProfile();
-	// In BP: Set InputPlayerName input field value,
-	// no access to this variable in cpp because WidgetIs implemented in BP
+
+	FOnMainMenuShown.Broadcast();
 }
 
 UCPP_MainMenuUserWidget* UCPP_ArenaGameInstance::GetMainMenuWidget()
@@ -135,6 +135,13 @@ void UCPP_ArenaGameInstance::CreateMPSession(FName SessionName)
 		return;
 	}
 
+	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(NAME_GameSession);
+	if(ExistingSession)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GameInstance.JoinMPSession: Session already exists locally, destroying before join"));
+		SessionInterface->DestroySession(NAME_GameSession);
+	}
+	
 	// Set session
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = bIsLanConnection;
@@ -147,7 +154,7 @@ void UCPP_ArenaGameInstance::CreateMPSession(FName SessionName)
 	bool bSessionCreated = SessionInterface->CreateSession(0, SessionName, SessionSettings);
 	if (bSessionCreated)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), FName("LobbyLevel"), true, FString("listen"));
+		UGameplayStatics::OpenLevel(GetWorld(), FName("LobbyLevel"), true, FString("?listen"));
 	}
 	else
 	{
@@ -155,7 +162,35 @@ void UCPP_ArenaGameInstance::CreateMPSession(FName SessionName)
 	}
 }
 
-void UCPP_ArenaGameInstance::OnJoinSessionCompleated(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+void UCPP_ArenaGameInstance::JoinMPSession(int32 SessionIndex)
+{
+	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+	if (!OnlineSubsystem)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No OnlineSubsystem found!"))
+		return;
+	}
+
+	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
+	if (!SessionInterface)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No SessionInterface found!"))
+		return;
+	}
+	OnJoinSessionDelegateHandle = SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(
+		this, &UCPP_ArenaGameInstance::OnJoinSessionCompleted);
+
+	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(NAME_GameSession);
+	if(ExistingSession)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GameInstance.JoinMPSession: Session already exists locally, destroying before join"));
+		SessionInterface->DestroySession(NAME_GameSession);
+	}
+	
+	SessionInterface->JoinSession(0, NAME_GameSession, SessionSearch->SearchResults[SessionIndex]);
+}
+
+void UCPP_ArenaGameInstance::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 	if (!OnlineSubsystem) return;
@@ -178,35 +213,18 @@ void UCPP_ArenaGameInstance::OnJoinSessionCompleated(FName SessionName, EOnJoinS
 		return;
 	}
 
-	APlayerController* PC = GetFirstLocalPlayerController();
+	APlayerController* PC = GetFirstLocalPlayerController(GetWorld());
 	if (!PC)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to get first local player"));
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("PC World: %s"), *GetNameSafe(PC->GetWorld()));
+	UE_LOG(LogTemp, Warning, TEXT("PC Name: %s"), *PC->GetName());
+
+	UE_LOG(LogTemp, Warning, TEXT("ClientTravel to: %s"), *ConnectString);
 	PC->ClientTravel(ConnectString, TRAVEL_Absolute);
-}
-
-void UCPP_ArenaGameInstance::JoinMPSession(int32 SessionIndex)
-{
-	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
-	if (!OnlineSubsystem)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No OnlineSubsystem found!"))
-		return;
-	}
-
-	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
-	if (!SessionInterface)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No SessionInterface found!"))
-		return;
-	}
-	OnJoinSessionDelegateHandle = SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(
-		this, &UCPP_ArenaGameInstance::OnJoinSessionCompleated);
-
-	SessionInterface->JoinSession(0, NAME_GameSession, SessionSearch->SearchResults[SessionIndex]);
 }
 
 void UCPP_ArenaGameInstance::LoadProfile()

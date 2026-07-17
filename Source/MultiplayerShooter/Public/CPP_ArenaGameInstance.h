@@ -15,8 +15,10 @@
 #include "UI/CPP_MainMenuUserWidget.h"
 #include "CPP_ArenaGameInstance.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSessionsFound, const TArray<FCPP_S_SessionResultWrapper>&, Sessions,
-												bool, bWasSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSessionsFound, const TArray<FCPP_S_SessionResultWrapper>&,
+                                             Sessions, bool, bWasSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMainMenuShowed);
+
 
 /**
  * @class UCPP_ArenaGameInstance
@@ -29,7 +31,7 @@ class MULTIPLAYERSHOOTER_API UCPP_ArenaGameInstance : public UGameInstance
 
 	// --- CONSTANT ---
 	const FName SERVER_NAME = "SERVER_NAME";
-	
+
 	// --- PROPERTIES ---
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
@@ -65,29 +67,30 @@ private:
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Session")
 	FOnSessionsFound OnSessionsFound;
-	
+
+	UPROPERTY(BlueprintAssignable, Category = "Session")
+	FOnMainMenuShowed FOnMainMenuShown;
+
 	// --- EVENTS ---
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnJoinSessionClicked(int32 SessionIndex);
 	virtual void OnJoinSessionClicked_Implementation(int32 SessionIndex);
-	
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+
+	UFUNCTION(BlueprintCallable)
 	void UI_ShowMainMenu();
-	virtual void UI_ShowMainMenu_Implementation();
-	
+
 	// --- FUNCTIONS ---
 public:
 	UFUNCTION(BlueprintCallable)
 	void CreateMPSession(FName SessionName);
 
-	void OnJoinSessionCompleated(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-	
 	void JoinMPSession(int32 SessionIndex);
+	void OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 	
 	UFUNCTION(BlueprintCallable)
 	void UI_SearchGame();
-	
+
 	UFUNCTION(BlueprintCallable)
 	void ChangePlayerName(FText PlayerName);
 
