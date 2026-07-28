@@ -18,15 +18,15 @@ struct FCPP_S_SessionResultWrapper
 	int32 ResultIndex = -1;
 	
 	UPROPERTY(BlueprintReadWrite)
-	FString SessionName;
+	FString SessionName = "No Session Name";
 
 	UPROPERTY(BlueprintReadWrite)
-	int32 CurrentPlayers;
+	int32 CurrentPlayers = -1;
 
 	UPROPERTY(BlueprintReadWrite)
-	int32 MaxPlayers;
+	int32 MaxPlayers = -1;
 
 	UPROPERTY(BlueprintReadWrite)
-	int32 PingsInMs;
+	int32 PingsInMs = -1;
 	
 };
