@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CPP_ShooterMenuPlayerController.h"
+#include "Player/CPP_LobbyPlayerController.h"
 #include "CPP_ArenaGameInstance.h"
 
-void ACPP_ShooterMenuPlayerController::BeginPlay()
+void ACPP_LobbyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -12,7 +12,7 @@ void ACPP_ShooterMenuPlayerController::BeginPlay()
 	{
 		if (UCPP_ArenaGameInstance* AreneGI = Cast<UCPP_ArenaGameInstance>(GetGameInstance()))
 		{
-			AreneGI->UI_ShowMainMenu();
+			AreneGI->UI_ShowLobbyMenu();
 		}
 	}
 }

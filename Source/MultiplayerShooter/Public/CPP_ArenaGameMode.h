@@ -25,10 +25,11 @@ private:
 	UPROPERTY()
 	int Num_ExpectedPlayers;
 	
+public:
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+	
 protected:
 	virtual void BeginPlay() override;
-
-	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
-
+	
 	void SetupNewPlayer(APlayerController* NewPlayer);
 };

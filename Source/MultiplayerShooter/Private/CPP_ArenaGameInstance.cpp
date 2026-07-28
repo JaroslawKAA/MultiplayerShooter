@@ -29,7 +29,27 @@ void UCPP_ArenaGameInstance::UI_ShowMainMenu()
 
 	CheckForSavedProfile();
 
-	FOnMainMenuShown.Broadcast();
+	OnMainMenuShown.Broadcast();
+}
+
+void UCPP_ArenaGameInstance::UI_ShowLobbyMenu()
+{
+	APlayerController* LocalPlayerController = GetFirstLocalPlayerController(GetWorld());
+	if (!LobbyWidgetInstance)
+	{
+		UUserWidget* WidgetInstance = CreateWidget(LocalPlayerController, LobbyWidgetClass, TEXT("LobbyMenu"));
+		LobbyWidgetInstance = Cast<UCPP_LobbyUserWidget>(WidgetInstance);
+	}
+
+	LobbyWidgetInstance->AddToViewport();
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(nullptr);
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	LocalPlayerController->SetInputMode(InputMode);
+	LocalPlayerController->bShowMouseCursor = true;
+	UE_LOG(LogTemp, Log, TEXT("Showing Lobby Menu"));
+
+	OnLobbyMenuShown.Broadcast();
 }
 
 UCPP_MainMenuUserWidget* UCPP_ArenaGameInstance::GetMainMenuWidget()

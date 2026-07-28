@@ -13,11 +13,13 @@
 #include "SaveData/CPP_S_PlayerProfile.h"
 #include "Session/FCPP_S_SessionResultWrapper.h"
 #include "UI/CPP_MainMenuUserWidget.h"
+#include "UI/CPP_LobbyUserWidget.h"
 #include "CPP_ArenaGameInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSessionsFound, const TArray<FCPP_S_SessionResultWrapper>&,
                                              Sessions, bool, bWasSuccess);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMainMenuShowed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLobbyMenuShowed);
 
 
 /**
@@ -39,6 +41,13 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
 	UCPP_MainMenuUserWidget* MainMenuWidgetInstance;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> LobbyWidgetClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "UI")
+	UCPP_LobbyUserWidget* LobbyWidgetInstance;
+
 
 	// MainMenuWidgetInstance Getter
 	UFUNCTION(BlueprintCallable)
@@ -68,8 +77,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Session")
 	FOnSessionsFound OnSessionsFound;
 
-	UPROPERTY(BlueprintAssignable, Category = "Session")
-	FOnMainMenuShowed FOnMainMenuShown;
+	UPROPERTY(BlueprintAssignable, Category = "UI")
+	FOnMainMenuShowed OnMainMenuShown;
+	
+	UPROPERTY(BlueprintAssignable, Category = "UI")
+	FOnLobbyMenuShowed OnLobbyMenuShown;
 
 	// --- EVENTS ---
 public:
@@ -77,11 +89,18 @@ public:
 	void OnJoinSessionClicked(int32 SessionIndex);
 	virtual void OnJoinSessionClicked_Implementation(int32 SessionIndex);
 
+
+	
+	// --- FUNCTIONS ---
+public:
+	// UI Functions
 	UFUNCTION(BlueprintCallable)
 	void UI_ShowMainMenu();
 
-	// --- FUNCTIONS ---
-public:
+	UFUNCTION(BlueprintCallable)
+	void UI_ShowLobbyMenu();
+	
+	// ---
 	UFUNCTION(BlueprintCallable)
 	void CreateMPSession(FName SessionName);
 
