@@ -5,19 +5,16 @@
 #include "CoreMinimal.h"
 #include "CPP_GameModeBase.h"
 #include "GameFramework/GameModeBase.h"
-#include "Player/CPP_PlayerController.h"
-#include "CPP_ArenaGameMode.generated.h"
+#include "Player/CPP_LobbyPlayerController.h"
+#include "CPP_LobbyGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MULTIPLAYERSHOOTER_API ACPP_ArenaGameMode : public ACPP_GameModeBase
+class MULTIPLAYERSHOOTER_API ACPP_LobbyGameMode : public ACPP_GameModeBase
 {
 	GENERATED_BODY()
-	
-	// --- FUNCTIONS ---
-protected:
-	virtual void BeginPlay() override;
+
 
 };

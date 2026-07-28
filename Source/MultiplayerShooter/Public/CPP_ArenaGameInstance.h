@@ -49,6 +49,8 @@ private:
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 	FDelegateHandle OnJoinSessionDelegateHandle;
 	FDelegateHandle OnFindSessionDelegateHandle;
+	
+	int32 NumConnectedPlayers = -1;
 
 	// --- DElEGATES ---
 public:
@@ -68,6 +70,8 @@ public:
 
 	void JoinMPSession(int32 SessionIndex);
 	void OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	
+	void TravelToMap(int32 ConnectedPlayers, FString MapName);
 
 	UFUNCTION(BlueprintCallable)
 	void SearchGame();

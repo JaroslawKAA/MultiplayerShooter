@@ -9,11 +9,6 @@
 #include "UI/CPP_UIWidgetDefaults.h"
 #include "VerseVM/VVMSession.h"
 
-UCPP_MainMenuUserWidget* UCPP_UIManagerSubsystem::GetMainMenuWidget()
-{
-	return MainMenuWidgetInstance;
-}
-
 void UCPP_UIManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);

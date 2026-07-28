@@ -3,9 +3,11 @@
 
 #include "CPP_ArenaGameInstance.h"
 
+#include "OnlineSubsystemUtils.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/App.h"
+#include "Online/CPP_OnlineUtils.h"
 #include "SaveData/CPP_SG_PlayerProfile.h"
 #include "VerseVM/VVMSession.h"
 
@@ -19,19 +21,7 @@ void UCPP_ArenaGameInstance::OnJoinSessionClicked_Implementation(int32 SessionIn
 
 void UCPP_ArenaGameInstance::SearchGame()
 {
-	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
-	if (!OnlineSubsystem)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No OnlineSubsystem found!"))
-		return;
-	}
-
-	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
-	if (!SessionInterface)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No SessionInterface found!"))
-		return;
-	}
+	IOnlineSessionPtr SessionInterface = Online::GetSessionInterface(GetWorld());
 
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	SessionSearch->MaxSearchResults = 50;
@@ -96,19 +86,7 @@ FText UCPP_ArenaGameInstance::GetConnectionTypeText()
 
 void UCPP_ArenaGameInstance::CreateMPSession(FName SessionName)
 {
-	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
-	if (!OnlineSubsystem)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No OnlineSubsystem found!"))
-		return;
-	}
-
-	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
-	if (!SessionInterface)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No SessionInterface found!"))
-		return;
-	}
+	IOnlineSessionPtr SessionInterface = Online::GetSessionInterface(GetWorld());
 
 	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(NAME_GameSession);
 	if(ExistingSession)
@@ -133,25 +111,14 @@ void UCPP_ArenaGameInstance::CreateMPSession(FName SessionName)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("GameInstance.CreateMPSession: Session Creation Failed!"));
+		UE_LOG(LogTemp, Error, TEXT("ArenaGameInstance.CreateMPSession: Session Creation Failed!"));
 	}
 }
 
 void UCPP_ArenaGameInstance::JoinMPSession(int32 SessionIndex)
 {
-	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
-	if (!OnlineSubsystem)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No OnlineSubsystem found!"))
-		return;
-	}
-
-	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
-	if (!SessionInterface)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No SessionInterface found!"))
-		return;
-	}
+	IOnlineSessionPtr SessionInterface =  Online::GetSessionInterface(GetWorld());
+	
 	OnJoinSessionDelegateHandle = SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(
 		this, &UCPP_ArenaGameInstance::OnJoinSessionCompleted);
 
@@ -167,12 +134,8 @@ void UCPP_ArenaGameInstance::JoinMPSession(int32 SessionIndex)
 
 void UCPP_ArenaGameInstance::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
-	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
-	if (!OnlineSubsystem) return;
-
-	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
-	if (!SessionInterface.IsValid()) return;
-
+	IOnlineSessionPtr SessionInterface =  Online::GetSessionInterface(GetWorld());
+	
 	SessionInterface->OnJoinSessionCompleteDelegates.Remove(OnJoinSessionDelegateHandle);
 
 	if (Result != EOnJoinSessionCompleteResult::Success)
@@ -202,12 +165,19 @@ void UCPP_ArenaGameInstance::OnJoinSessionCompleted(FName SessionName, EOnJoinSe
 	PC->ClientTravel(ConnectString, TRAVEL_Absolute);
 }
 
+void UCPP_ArenaGameInstance::TravelToMap(int32 ConnectedPlayers, FString MapName)
+{
+	NumConnectedPlayers = ConnectedPlayers;
+	
+	GetWorld()->ServerTravel(MapName + TEXT("?listen"));
+}
+
 void UCPP_ArenaGameInstance::LoadProfile()
 {
 	USaveGame* SaveGame = UGameplayStatics::LoadGameFromSlot(SlotName, 0);
 	TCopyQualifiersFromTo_T<USaveGame, UCPP_SG_PlayerProfile>* PlayerProfileSaveGameTmp = Cast<
 		UCPP_SG_PlayerProfile>(SaveGame);
-	this->PlayerProfile = PlayerProfileSaveGameTmp->PlayerProfile;
+	PlayerProfile = PlayerProfileSaveGameTmp->PlayerProfile;
 }
 
 void UCPP_ArenaGameInstance::OnFindSessionComplete(bool bWasSucces)

@@ -7,10 +7,11 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Templates/SharedPointer.h"
 #include "FindSessionsCallbackProxy.h"
-#include "UI/CPP_MainMenuUserWidget.h"
-#include "UI/CPP_LobbyUserWidget.h"
 #include "UI/CPP_UIWidgetDefaults.h"
 #include "CPP_UIManagerSubsystem.generated.h"
+
+class UCPP_LobbyUserWidget;
+class UCPP_MainMenuUserWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMainMenuShowed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLobbyMenuShowed);
@@ -24,17 +25,13 @@ class MULTIPLAYERSHOOTER_API UCPP_UIManagerSubsystem : public UGameInstanceSubsy
 	GENERATED_BODY()
 	
 	// --- PROPERTIES ---
-protected:
+public:
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UCPP_MainMenuUserWidget* MainMenuWidgetInstance;
+	TObjectPtr<UCPP_MainMenuUserWidget> MainMenuWidgetInstance;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UCPP_LobbyUserWidget* LobbyWidgetInstance;
-	
-	// MainMenuWidgetInstance Getter
-	UFUNCTION(BlueprintCallable)
-	UCPP_MainMenuUserWidget* GetMainMenuWidget();
-	
+	TObjectPtr<UCPP_LobbyUserWidget> LobbyWidgetInstance;
+
 private:
 	UPROPERTY()
 	UCPP_ArenaGameInstance* ArenaGameInstance;

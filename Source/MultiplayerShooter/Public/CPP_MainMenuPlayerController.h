@@ -4,16 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "CPP_ShooterMenuPlayerController.generated.h"
+#include "CPP_MainMenuPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MULTIPLAYERSHOOTER_API ACPP_ShooterMenuPlayerController : public APlayerController
+class MULTIPLAYERSHOOTER_API ACPP_MainMenuPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 protected:
 	virtual void BeginPlay() override;
+	
+public:
+	UFUNCTION(BlueprintCallable)
+	void EndClientSession();
 };

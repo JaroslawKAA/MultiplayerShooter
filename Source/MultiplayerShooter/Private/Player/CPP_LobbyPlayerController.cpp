@@ -3,6 +3,9 @@
 
 #include "Player/CPP_LobbyPlayerController.h"
 #include "CPP_ArenaGameInstance.h"
+#include "OnlineSubsystemUtils.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/CPP_UIManagerSubsystem.h"
 
 void ACPP_LobbyPlayerController::BeginPlay()
@@ -14,7 +17,9 @@ void ACPP_LobbyPlayerController::BeginPlay()
 		if (UCPP_ArenaGameInstance* AreneGI = Cast<UCPP_ArenaGameInstance>(GetGameInstance()))
 		{
 			if (UCPP_UIManagerSubsystem* UIManagerSubsystem = AreneGI->GetSubsystem<UCPP_UIManagerSubsystem>())
+			{
 				UIManagerSubsystem->UI_ShowLobbyMenu();
+			}
 		}
 	}
 }
