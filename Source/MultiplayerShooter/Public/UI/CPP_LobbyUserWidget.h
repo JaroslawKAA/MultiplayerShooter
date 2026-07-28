@@ -14,4 +14,8 @@ class MULTIPLAYERSHOOTER_API UCPP_LobbyUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+protected:
+	UFUNCTION()
+	void Btn_StartGame();
+	void Btn_Back();
 };

@@ -12,14 +12,10 @@
 #include "SaveData/CPP_SG_PlayerProfile.h"
 #include "SaveData/CPP_S_PlayerProfile.h"
 #include "Session/FCPP_S_SessionResultWrapper.h"
-#include "UI/CPP_MainMenuUserWidget.h"
-#include "UI/CPP_LobbyUserWidget.h"
 #include "CPP_ArenaGameInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSessionsFound, const TArray<FCPP_S_SessionResultWrapper>&,
                                              Sessions, bool, bWasSuccess);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMainMenuShowed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLobbyMenuShowed);
 
 
 /**
@@ -33,26 +29,8 @@ class MULTIPLAYERSHOOTER_API UCPP_ArenaGameInstance : public UGameInstance
 
 	// --- CONSTANT ---
 	const FName SERVER_NAME = "SERVER_NAME";
-
-	// --- PROPERTIES ---
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<UUserWidget> MainMenuWidgetClass;
-
-	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UCPP_MainMenuUserWidget* MainMenuWidgetInstance;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<UUserWidget> LobbyWidgetClass;
-
-	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UCPP_LobbyUserWidget* LobbyWidgetInstance;
-
-
-	// MainMenuWidgetInstance Getter
-	UFUNCTION(BlueprintCallable)
-	UCPP_MainMenuUserWidget* GetMainMenuWidget();
-
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SaveData")
 	FString SlotName;
 
@@ -76,40 +54,24 @@ private:
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Session")
 	FOnSessionsFound OnSessionsFound;
-
-	UPROPERTY(BlueprintAssignable, Category = "UI")
-	FOnMainMenuShowed OnMainMenuShown;
 	
-	UPROPERTY(BlueprintAssignable, Category = "UI")
-	FOnLobbyMenuShowed OnLobbyMenuShown;
-
 	// --- EVENTS ---
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnJoinSessionClicked(int32 SessionIndex);
 	virtual void OnJoinSessionClicked_Implementation(int32 SessionIndex);
-
-
 	
 	// --- FUNCTIONS ---
 public:
-	// UI Functions
-	UFUNCTION(BlueprintCallable)
-	void UI_ShowMainMenu();
-
-	UFUNCTION(BlueprintCallable)
-	void UI_ShowLobbyMenu();
-	
-	// ---
 	UFUNCTION(BlueprintCallable)
 	void CreateMPSession(FName SessionName);
 
 	void JoinMPSession(int32 SessionIndex);
 	void OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-	
-	UFUNCTION(BlueprintCallable)
-	void UI_SearchGame();
 
+	UFUNCTION(BlueprintCallable)
+	void SearchGame();
+	
 	UFUNCTION(BlueprintCallable)
 	void ChangePlayerName(FText PlayerName);
 

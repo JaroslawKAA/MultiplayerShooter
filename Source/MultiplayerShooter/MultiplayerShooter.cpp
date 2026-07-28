@@ -2,5 +2,8 @@
 
 #include "MultiplayerShooter.h"
 #include "Modules/ModuleManager.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "UObject/ConstructorHelpers.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, MultiplayerShooter, "MultiplayerShooter" );
+

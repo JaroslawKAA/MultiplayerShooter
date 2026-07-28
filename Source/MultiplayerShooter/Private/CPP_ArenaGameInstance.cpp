@@ -10,59 +10,14 @@
 #include "VerseVM/VVMSession.h"
 
 
-void UCPP_ArenaGameInstance::UI_ShowMainMenu()
-{
-	APlayerController* LocalPlayerController = GetFirstLocalPlayerController(GetWorld());
-	if (!MainMenuWidgetInstance)
-	{
-		UUserWidget* WidgetInstance = CreateWidget(LocalPlayerController, MainMenuWidgetClass, TEXT("MainMenu"));
-		MainMenuWidgetInstance = Cast<UCPP_MainMenuUserWidget>(WidgetInstance);
-	}
 
-	MainMenuWidgetInstance->AddToViewport();
-	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(nullptr);
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	LocalPlayerController->SetInputMode(InputMode);
-	LocalPlayerController->bShowMouseCursor = true;
-	UE_LOG(LogTemp, Log, TEXT("Showing Main Menu"));
-
-	CheckForSavedProfile();
-
-	OnMainMenuShown.Broadcast();
-}
-
-void UCPP_ArenaGameInstance::UI_ShowLobbyMenu()
-{
-	APlayerController* LocalPlayerController = GetFirstLocalPlayerController(GetWorld());
-	if (!LobbyWidgetInstance)
-	{
-		UUserWidget* WidgetInstance = CreateWidget(LocalPlayerController, LobbyWidgetClass, TEXT("LobbyMenu"));
-		LobbyWidgetInstance = Cast<UCPP_LobbyUserWidget>(WidgetInstance);
-	}
-
-	LobbyWidgetInstance->AddToViewport();
-	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(nullptr);
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	LocalPlayerController->SetInputMode(InputMode);
-	LocalPlayerController->bShowMouseCursor = true;
-	UE_LOG(LogTemp, Log, TEXT("Showing Lobby Menu"));
-
-	OnLobbyMenuShown.Broadcast();
-}
-
-UCPP_MainMenuUserWidget* UCPP_ArenaGameInstance::GetMainMenuWidget()
-{
-	return MainMenuWidgetInstance;
-}
 
 void UCPP_ArenaGameInstance::OnJoinSessionClicked_Implementation(int32 SessionIndex)
 {
 	JoinMPSession(SessionIndex);
 }
 
-void UCPP_ArenaGameInstance::UI_SearchGame()
+void UCPP_ArenaGameInstance::SearchGame()
 {
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 	if (!OnlineSubsystem)

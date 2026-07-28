@@ -3,3 +3,10 @@
 
 #include "UI/CPP_LobbyUserWidget.h"
 
+void UCPP_LobbyUserWidget::Btn_StartGame()
+{
+}
+
+void UCPP_LobbyUserWidget::Btn_Back()
+{
+}

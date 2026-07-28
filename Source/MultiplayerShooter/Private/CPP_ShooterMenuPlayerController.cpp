@@ -3,6 +3,7 @@
 
 #include "CPP_ShooterMenuPlayerController.h"
 #include "CPP_ArenaGameInstance.h"
+#include "UI/CPP_UIManagerSubsystem.h"
 
 void ACPP_ShooterMenuPlayerController::BeginPlay()
 {
@@ -12,7 +13,8 @@ void ACPP_ShooterMenuPlayerController::BeginPlay()
 	{
 		if (UCPP_ArenaGameInstance* AreneGI = Cast<UCPP_ArenaGameInstance>(GetGameInstance()))
 		{
-			AreneGI->UI_ShowMainMenu();
+			if (UCPP_UIManagerSubsystem* UIManagerSubsystem = AreneGI->GetSubsystem<UCPP_UIManagerSubsystem>())
+			UIManagerSubsystem->UI_ShowMainMenu();
 		}
 	}
 }
